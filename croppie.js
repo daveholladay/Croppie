@@ -985,7 +985,6 @@
         data.circle = self.options.viewport.type === 'circle';
         data.url = self.data.url;
 
-        console.log(data);
         prom = new Promise(function (resolve, reject) {
             if (type === 'canvas') {
                 resolve(_getCanvasResult.call(self, self.elements.preview, data));
@@ -1076,6 +1075,31 @@
         };
     }
 
+    function _updateBoundaries(newOptions) {
+        var self = this;
+
+        if (newOptions && newOptions.boundary) {
+            self.options.boundary.width = newOptions.boundary.width;
+            self.options.boundary.height = newOptions.boundary.height;
+            css(self.elements.boundary, {
+                width: self.options.boundary.width + 'px',
+                height: self.options.boundary.height + 'px'
+            });
+        }
+
+        if (newOptions && newOptions.viewport) {
+            self.options.viewport.width = newOptions.viewport.width;
+            self.options.viewport.height = newOptions.viewport.height;
+            css(self.elements.viewport, {
+                width: self.options.viewport.width + 'px',
+                height: self.options.viewport.height + 'px'
+            });
+        }
+        setTimeout(function() {
+            self.bind();
+        }, 0);
+    }
+
     function Croppie(element, opts) {
         this.element = element;
         this.options = deepExtend(deepExtend({}, Croppie.defaults), opts);
@@ -1136,6 +1160,9 @@
         },
         rotate: function (deg) {
             _rotate.call(this, deg);
+        },
+        updateBoundaries: function(width, height){
+            _updateBoundaries.call(this, width, height);
         },
         destroy: function () {
             return _destroy.call(this);
