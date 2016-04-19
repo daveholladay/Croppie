@@ -211,6 +211,7 @@
     function getExifOrientation (img, cb) {
         if (!window.EXIF) {
             cb(0);
+            return;
         }
 
         EXIF.getData(img, function () { 
@@ -847,7 +848,8 @@
             canvas = document.createElement('canvas'),
             ctx = canvas.getContext('2d'),
             outWidth = width,
-            outHeight = height;
+            outHeight = height,
+            backgroundFill = data.backgroundFill;
 
         if (data.outputWidth && data.outputHeight) {
             outWidth = data.outputWidth;
@@ -856,6 +858,11 @@
 
         canvas.width = outWidth;
         canvas.height = outHeight;
+
+        if (backgroundFill) {
+            ctx.fillStyle = backgroundFill;
+            ctx.fillRect(0, 0, outWidth, outHeight);
+        }
 
         ctx.drawImage(img, left, top, width, height, 0, 0, outWidth, outHeight);
         if (circle) {
@@ -957,6 +964,7 @@
             size = opts.size,
             format = opts.format,
             quality = opts.quality,
+            backgroundFill = opts.backgroundFill,
             vpRect = self.elements.viewport.getBoundingClientRect(),
             ratio = vpRect.width / vpRect.height,
             prom;
@@ -981,6 +989,9 @@
             data.format = 'image/' + format;
             data.quality = quality;
         }
+
+        if (backgroundFill)
+            data.backgroundFill = backgroundFill;
 
         data.circle = self.options.viewport.type === 'circle';
         data.url = self.data.url;
